@@ -3,18 +3,23 @@ namespace Model;
 
 use PDO;
 use PDOException;
+use Dotenv\Dotenv;
+
+
 
 class Database {
-    private static $pdo = null;
+    private static ?PDO $pdo = null;
 
     public static function getConnection() {
         if (self::$pdo === null) {
             try {
+                $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+                $dotenv->load();
                 // Credenciais conforme definidas no compose.yml
-                $host = 'db'; 
-                $db   = 'jogosueca';
-                $user = 'sueca_user';
-                $pass = 'sueca_password';
+                $host = $_ENV['DB_HOST'];
+                $db   = $_ENV['DB_DATABASE'];
+                $user = $_ENV['DB_USERNAME'];
+                $pass = $_ENV['DB_PASSWORD'];
                 
                 $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
                 $options = [

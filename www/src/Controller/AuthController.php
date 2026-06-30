@@ -54,11 +54,11 @@ class AuthController {
                 try {
                     // Configurações do Servidor SMTP (Exemplo: Mailtrap para testes locais)
                     $mail->isSMTP();
-                    $mail->Host       = 'sandbox.smtp.mailtrap.io'; // Substituir pelo teu host SMTP real
-                    $mail->SMTPAuth   = true;
-                    $mail->Username   = '7ff7df9a6ec2d2';        // Substituir pelas tuas credenciais
-                    $mail->Password   = '****ac34';
-                    $mail->Port       = 2525;
+                    $mail->Host       = $_ENV['MAIL_HOST'];
+                    $mail->SMTPAuth   = $_ENV['MAIL_SMTPAUTH'];
+                    $mail->Username   = $_ENV['MAIL_USERNAME'];
+                    $mail->Password   = $_ENV['MAIL_PASSWORD'];
+                    $mail->Port       = $_ENV['MAIL_PORT'];
 
                     // Remetente e Destinatário
                     $mail->setFrom('noreply@jogosueca.localhost', 'Equipa Jogosueca');
