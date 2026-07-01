@@ -1,0 +1,49 @@
+body {
+    background-image: url('../img/background.png');
+    background-repeat: repeat;
+    background-size: cover;
+}
+
+.btn-carmine {
+    background-color: #960018;
+    color: white;
+}
+
+.btn-hearts-card {
+    background-color: #ff0000;
+    color: white;
+}
+
+.btn-hearts-card:hover {
+    background-color: #cc0000;
+    color: white;
+}
+
+.btn-outline-spades {
+    border-color: #0e1724;
+    color: #0e1724;
+}
+
+.btn-spades-card {
+    background-color: #0e1724;
+    color: white;
+}
+
+.btn-spades-card:hover {
+    background-color: #0a0f1a;
+    color: white;
+}
+
+.btn-outline-spades:hover {
+    background-color: #0e1724;
+    color: white;
+}
+
+.btn-carmine:hover {
+    background-color: #7a0014;
+    color: white;
+}
+
+.text-hearts {
+    color: #ff0000;
+}
