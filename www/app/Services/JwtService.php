@@ -21,7 +21,7 @@ Class JwtService {
         /**O método instanciado já retorna a resposta decodificada em JSON como array associativo, 
          * ou null se houver algum erro na requisição ou na decodificação da resposta. */
         if ($apiResponse === null) { 
-            error_log('Falha ao obter o token JWT da API. Resposta da API: ' . $apiResponse);
+            error_log('Falha ao obter o token JWT da API. Resposta da API: ' . json_encode($apiResponse));
             return null;
         }
 

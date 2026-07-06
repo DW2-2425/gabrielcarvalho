@@ -123,7 +123,6 @@ class AuthController {
         try {
             // 1. Tentar obter o Token JWT da API
             $jwtToken = $userModel->getJwtTokenForUser($user['email'], $password);
-            error_log($jwtToken);
             
 
             if ($jwtToken === null) { // Se não for possível obter o Token JWT, mostrar a página de login com erro

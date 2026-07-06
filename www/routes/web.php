@@ -42,6 +42,7 @@ return function (Router $router) { // Recebe o objeto Router do index.php
     $router->post('/create_room', [RoomController::class, 'create']);
     $router->get('/join_room', [RoomController::class, 'join']);
     $router->get('/room', [RoomController::class, 'showRoom']);
+    $router->get('/leave_room', [RoomController::class, 'leaveRoom']);
     
     $router->post('/start_game', [RoomController::class, 'startGame']);
 

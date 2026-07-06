@@ -67,8 +67,10 @@ class Room {
                 $insert = $db->prepare("INSERT INTO room_players (room_id, user_id) VALUES (?, ?)");
                 $insert->execute([$roomId, $userId]);
             }
+            error_log("User $userId joined room $roomId.");
             return true;
         }
+        error_log("Failed to join room $roomId for user $userId. Room status: " . ($room['status'] ?? 'N/A') . ", Player count: " . ($room['count'] ?? 'N/A'));
         return false;
     }
 
@@ -84,6 +86,7 @@ class Room {
             $stmt2->execute([$roomId]);
             $room['players'] = $stmt2->fetchAll(\PDO::FETCH_COLUMN);
         }
+        error_log("Room details for room $roomId: " . json_encode($room));
         return $room;
     }
 
@@ -91,6 +94,7 @@ class Room {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT room_id FROM room_players WHERE user_id = ?");
         $stmt->execute([$userId]);
+        error_log("Current room ID for user $userId: " . $stmt->fetchColumn());
         return $stmt->fetchColumn();
     }
 
@@ -98,6 +102,7 @@ class Room {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT COUNT(*) FROM room_players WHERE room_id = ?");
         $stmt->execute([$roomId]);
+        error_log("Player count for room $roomId: " . $stmt->fetchColumn());
         return (int) $stmt->fetchColumn();
     }
 
@@ -105,6 +110,7 @@ class Room {
         $db = Database::getConnection();
         $stmt = $db->prepare("DELETE FROM rooms WHERE id = ?");
         $stmt->execute([$roomId]);
+        error_log("Attempted to delete room $roomId. Rows affected: " . $stmt->rowCount());
         return $stmt->rowCount() > 0; // Retorna true se a sala foi deletada, false caso contrário
     }
 
@@ -112,6 +118,7 @@ class Room {
         $db = Database::getConnection();
         $stmt = $db->prepare("DELETE FROM rooms WHERE id = ? AND NOT EXISTS (SELECT 1 FROM room_players WHERE room_id = ?)");
         $stmt->execute([$roomId, $roomId]);
+        error_log("Attempted to delete room $roomId if empty. Rows affected: " . $stmt->rowCount());
         return $stmt->rowCount() > 0; // Retorna true se a sala foi deletada, false caso contrário
     }
 
@@ -132,6 +139,8 @@ class Room {
     public function leaveRoom(int $roomId, int $userId) {
         $db = Database::getConnection();
         $stmt = $db->prepare("DELETE FROM room_players WHERE room_id = ? AND user_id = ?");
-        return $stmt->execute([$roomId, $userId]);
+        $stmt->execute([$roomId, $userId]);
+        error_log("User $userId left room $roomId. Rows affected: " . $stmt->rowCount());
+        return $stmt->rowCount() > 0; // Retorna true se o jogador foi removido da sala, false caso contrário
     }
 }

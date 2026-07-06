@@ -14,13 +14,13 @@ class ApiService {
         if (!empty($headers)) {
             $headers = array_values(array_unique($headers)); // Remove cabeçalhos duplicados, se houver
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            error_log('Cabeçalhos enviados na requisição POST: ' . json_encode($headers));
+            error_log('Cabeçalhos enviados via POST: ' . json_encode($headers));
         }
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        error_log('Resposta da API (POST): ' . $response);
+        error_log('Resposta da API (POST): ' . $response . ' | Código HTTP: ' . $httpCode);
 
         $decodedResponse = json_decode($response, true);
 

@@ -110,7 +110,7 @@ class RoomController {
             exit;
         }
 
-    public function leave() {
+    public function leaveRoom() {
         $user = new AuthController();
         if (!$user->isAuthenticated()) {
             header("Location: /login");

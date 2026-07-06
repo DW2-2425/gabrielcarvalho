@@ -14,4 +14,6 @@
     Route::middleware('auth:api')->group(function () {
         Route::post('/game/{roomId}/start', [GameController::class, 'startGame']);
         Route::get('/game/{roomId}/state', [GameController::class, 'getState']);
+        Route::post('/game/{roomId}/play', [GameController::class, 'playCard']);
+        Route::post('/game/{roomId}/bot-play', [GameController::class, 'botPlay']);
     });

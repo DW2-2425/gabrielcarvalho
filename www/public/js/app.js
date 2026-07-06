@@ -74,8 +74,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 cardDiv.className = `playing-card suit-${suit}`;
                 cardDiv.innerText = rank + suitSymbols[suit];
                 
-                // Evento de clique provisório para a próxima etapa
-                cardDiv.onclick = () => alert("Na próxima etapa vamos enviar a carta " + card + " para a API!");
+                // Jogar a carta ao clicar
+                cardDiv.onclick = () => {
+                    if (data.current_player_id === data.my_id) {
+                        fetch(`http://localhost:8001/api/game/${roomId}/play`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${jwtToken}`,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ card: card })
+                        })
+                        .then(res => res.json())
+                        .then(responseData => {
+                            console.log("Carta jogada:", responseData);
+                            fetchGameState(); // Atualiza o estado do jogo após jogar
+                        })
+                        .catch(err => console.error("Erro ao jogar carta:", err));
+                    } else {
+                        alert("Não é a tua vez de jogar!");
+                    }
+                };
                 
                 handContainer.appendChild(cardDiv);
             });
