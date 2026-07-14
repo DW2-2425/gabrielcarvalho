@@ -8,10 +8,10 @@ services:
     container_name: jogosueca_db
     restart: always
     environment:
-      MYSQL_DATABASE: jogosueca
-      MYSQL_USER: sueca_user
-      MYSQL_PASSWORD: sueca_password
-      MYSQL_ROOT_PASSWORD: sueca_root
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
     command: tunnel --no-autoupdate run
     environment:
-     - TUNNEL_TOKEN=eyJhIjoiNmJhYTZhYWY5MTAwZjk1ZTMwMDFmNTMwODFjNjAxMWQiLCJ0IjoiODU2MGVlN2QtYzFhZS00MjQ3LWJkYjctMWM4MDRjMzMyYmVjIiwicyI6Ik9HTm1NVGs0T1RBdFl6SXhPUzAwTm1NeExXRXhNemd0WVRSaU1tWTNORGN3WTJKa09ETTVNV1EyTm1FdE1qRTNOaTAwTnpWbExUZzJOREV0WkRNeU1HWXhNbUpsWkdWbCJ9
+     - TUNNEL_TOKEN=${CLOUDFLARED_TUNNEL_TOKEN}
     network_mode: "host"
       
 networks:
