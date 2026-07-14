@@ -98,5 +98,14 @@ return [
     'create_training_btn' => 'Start Training Room',
     'rules' => 'Game Rules',
     'rules_desc' => 'Learn the rules of Sueca and become a master of the game.',
-    'rules_btn' => 'View Rules'
+    'rules_btn' => 'View Rules',
+    'email' => 'Email',
+    'email_placeholder' => 'Your email address',
+    'email_required' => 'Email is required.',
+    'register' => 'Register',
+    'register_account' => 'Create Account',
+    'password_feedback' => 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.',
+    'password_mismatch' => 'Passwords do not match.',
+    'create_account_instructions' => 'Please fill in all the fields to create your account.',
+    'username_tooltip' => 'Your player name'
 ];

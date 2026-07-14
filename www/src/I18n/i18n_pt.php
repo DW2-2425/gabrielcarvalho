@@ -98,5 +98,14 @@ return [
     'create_training_btn' => 'Iniciar Sala de Treino',
     'rules' => 'Regras do Jogo',
     'rules_desc' => 'Aprenda as regras da Sueca e torne-se um mestre do jogo.',
-    'rules_btn' => 'Ver Regras'
+    'rules_btn' => 'Ver Regras',
+    'email' => 'Email',
+    'email_placeholder' => 'O seu endereço de email',
+    'email_required' => 'O email é obrigatório.',
+    'username_tooltip' => 'O seu nome de jogador',
+    'register' => 'Registar',
+    'register_account' => 'Criar Conta',
+    'password_feedback' => 'A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.',
+    'password_mismatch' => 'As passwords não coincidem.',
+    'create_account_instructions' => 'Por favor, preencha todos os campos para criar a sua conta.'
 ];

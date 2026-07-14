@@ -25,24 +25,26 @@
                             <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
                         <?php endif; ?>
 
-                        <form method="POST" action="/register" id="registerForm" novalidate>
-                            <div class="mb-3">
+                        <form class="needs-validation" method="POST" action="/register" id="registerForm" novalidate>
+                            <div class="mb-3 validate-container">
                                 <label for="username" class="form-label"><?= $i18n['username'] ?></label>
                                 <input type="text" class="form-control" id="username" name="username" required minlength="3" maxlength="10">
+                                <div class="invalid-feedback"><?= $i18n['username_tooltip'] ?></div>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 validate-container">
                                 <label for="email" class="form-label"><?= $i18n['email'] ?></label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="<?= $i18n['email_placeholder'] ?>"  required>
+                                <div class="invalid-feedback"><?= $i18n['email_required'] ?></div>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 validate-container">
                                 <label for="password" class="form-label"><?= $i18n['password'] ?></label>
                                 <input type="password" class="form-control" id="password" name="password" required minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$">
                                 <div class="invalid-feedback"><?= $i18n['password_feedback'] ?></div>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 validate-container">
                                 <label for="confirm_password" class="form-label"><?= $i18n['confirm_password'] ?></label>
                                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                <div class="invalid-feedback" id="confirm-feedback"><?= $i18n['password_mismatch'] ?></div>
+                                <div class="invalid-feedback"><?= $i18n['password_mismatch'] ?></div>
                             </div>
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-success"><?= $i18n['register_account'] ?></button>
@@ -58,6 +60,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../public/js/validate.js"></script>
+    <script src="../js/validate.js"></script>
 </body>
 </html>

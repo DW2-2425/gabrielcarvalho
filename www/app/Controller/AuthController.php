@@ -20,7 +20,8 @@ class AuthController {
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        $pswdRule = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+        $pswdRule = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#])[A-Za-z\d@$!%*?&.#]{8,}$/';
+        
 
         if (empty($username) || empty($email) || empty($password)) {
             $error = "Todos os campos são de preenchimento obrigatório.";
@@ -35,7 +36,8 @@ class AuthController {
         }
         
         if (!preg_match($pswdRule, $password)) {
-            $error = "A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.";
+            $error = "A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.
+            São permitidos: @ $ ! % * ? & . #";
             require_once __DIR__ . '/../../src/view/register.php';
             return;
         }
