@@ -1,18 +1,56 @@
- /* Estilos das Cartas */
-        .playing-card {
+.playing-card {
             display: inline-block; width: 55px; height: 80px;
             background: white; border: 1px solid #ccc; border-radius: 6px; margin: 3px;
             text-align: center; line-height: 80px; font-weight: bold; cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); user-select: none; font-size: 1.3rem;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform .35s cubic-bezier(.22,.61,.36,1), opacity .35s ease, box-shadow .35s ease; /* Animação suave ao passar o mouse */
         }
-        .playing-card:hover { transform: translateY(-10px); }
+        .playing-card:hover { transform: translateY(-12px) scale(1.06);
+        box-shadow: 0 10px 20px rgba(0,0,0,.35) }
         .suit-H, .suit-D { color: #e74c3c; } /* Copas e Ouros (Vermelho) */
         .suit-S, .suit-C { color: #2c3e50; } /* Espadas e Paus (Preto) */
         .text-shadow { text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+
+        .table-enter {
+            opacity: 0;
+            filter: blur(4px);
+        }
+
+        .table-show {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        .playing-card.can-play {
+            animation: pulseCard 1.4s infinite;
+        }
+
+        .played {
+            animation: flipCard .35s ease;
+        }
         
         /* Posições relativas das cartas jogadas no centro da mesa */
-        .table-card-0 { transform: translateY(20px); z-index: 4; } /* Eu */
-        .table-card-1 { transform: translateX(30px) rotate(90deg); z-index: 3; } /* Direita */
-        .table-card-2 { transform: translateY(-20px); z-index: 2; } /* Parceiro (Topo) */
-        .table-card-3 { transform: translateX(-30px) rotate(-90deg); z-index: 1; } /* Esquerda */
+        .table-card-0 { transform: translateY(35px); z-index: 4; } /* Eu */
+        .table-card-1 { transform: translateX(45px) rotate(90deg); z-index: 3; } /* Direita */
+        .table-card-2 { transform: translateY(-35px); z-index: 2; } /* Parceiro (Topo) */
+        .table-card-3 { transform: translateX(-45px) rotate(-90deg); z-index: 1; } /* Esquerda */
+
+        .trick-winner {
+            animation: winnerGlow 0.8s infinite alternate;
+        }
+
+        @keyframes pulseCard {
+            0% {transform: translateY(0);}
+            50% {transform: translateY(-6px);}
+            100% {transform: translateY(0);}
+        }
+
+        @keyframes winnerGlow {
+            from {box-shadow: 0 0 8px gold;}
+            to {box-shadow: 0 0 24px gold;}
+        }
+
+        @keyframes flipCard {
+            from {transform: rotateY(90deg);}
+            to {transform: rotateY(0deg);}
+        }

@@ -15,5 +15,5 @@
         Route::post('/game/{roomId}/start', [GameController::class, 'startGame']);
         Route::get('/game/{roomId}/state', [GameController::class, 'getState']);
         Route::post('/game/{roomId}/play', [GameController::class, 'playCard']);
-        Route::post('/game/{roomId}/bot-play', [GameController::class, 'botPlay']);
+        Route::post('/game/{roomId}/play-bot', [GameController::class, 'playBot']);
     });

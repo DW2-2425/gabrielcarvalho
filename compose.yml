@@ -50,9 +50,16 @@ services:
       - db
     networks:
       - sueca_network
-    
-  
 
+  cloudflared_app:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_app
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+     - TUNNEL_TOKEN=eyJhIjoiNmJhYTZhYWY5MTAwZjk1ZTMwMDFmNTMwODFjNjAxMWQiLCJ0IjoiODU2MGVlN2QtYzFhZS00MjQ3LWJkYjctMWM4MDRjMzMyYmVjIiwicyI6Ik9HTm1NVGs0T1RBdFl6SXhPUzAwTm1NeExXRXhNemd0WVRSaU1tWTNORGN3WTJKa09ETTVNV1EyTm1FdE1qRTNOaTAwTnpWbExUZzJOREV0WkRNeU1HWXhNbUpsWkdWbCJ9
+    network_mode: "host"
+      
 networks:
   sueca_network:
     driver: bridge

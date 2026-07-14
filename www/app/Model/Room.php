@@ -122,6 +122,38 @@ class Room {
         return $stmt->rowCount() > 0; // Retorna true se a sala foi deletada, false caso contrário
     }
 
+    public function removeBotFromRoom(int $roomId) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("DELETE rp FROM room_players rp JOIN users u ON rp.user_id = u.id WHERE rp.room_id = ? AND u.username LIKE 'Bot_%'");
+        $stmt->execute([$roomId]);
+        return $stmt->rowCount() > 0; // Retorna true se algum bot foi removido, false caso contrário
+    }
+
+        public function insertBotIntoRoom(int $roomId) {
+            $bot = User::getBotUser(); // Obtém a lista de bots disponíveis
+            if (!$bot) {
+                error_log("No bot user found to insert into room $roomId.");
+                return false;
+            } else {
+                $botCount = count($bot); // Conta quantos bots existem
+
+                while ($botCount < 3) { // Enquanto houver menos de 3 bots, insere mais bots na sala
+                    foreach ($bot as $b) { // Itera sobre cada bot disponível
+                        $this->joinRoom($roomId, $b['id']); // Insere o bot na sala
+                        $botCount++; // Incrementa o contador de bots
+                        if ($botCount >= 3) break; // Sai do loop se já houver 3 bots na sala
+                    }
+
+                    // Verifica novamente quantos bots existem na sala após a inserção
+                    $stmt = Database::getConnection()->prepare("SELECT COUNT(*) FROM room_players rp JOIN users u ON rp.user_id = u.id WHERE rp.room_id = ? AND u.username LIKE 'Bot_%'");
+                    $stmt->execute([$roomId]);
+                    $botCount = (int) $stmt->fetchColumn(); // Atualiza o contador de bots com a contagem atual na sala
+                } // Sai do loop quando houver 3 bots na sala
+            }
+
+            return true;
+        }
+
     public function isOwner(int $roomId, int $userId) :bool {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT 1 FROM rooms WHERE id = ? AND owner_id = ?");
@@ -137,10 +169,65 @@ class Room {
     }
 
     public function leaveRoom(int $roomId, int $userId) {
+    $db = Database::getConnection();
+    
+    // Descobre se quem está a tentar sair é o dono da sala
+    $stmt = $db->prepare("SELECT owner_id FROM rooms WHERE id = ?");
+    $stmt->execute([$roomId]);
+    $room = $stmt->fetch();
+
+    if ($room && $room['owner_id'] == $userId) {
+        $del = $db->prepare("DELETE FROM rooms WHERE id = ? AND status = 'Waiting'");
+        $del->execute([$roomId]);
+    } else {
+        $del = $db->prepare("DELETE FROM room_players WHERE room_id = ? AND user_id = ?");
+        $del->execute([$roomId, $userId]);
+    }
+}
+
+    public function createTrainingRoom(int $ownerId, string $ownerName) {
         $db = Database::getConnection();
-        $stmt = $db->prepare("DELETE FROM room_players WHERE room_id = ? AND user_id = ?");
-        $stmt->execute([$roomId, $userId]);
-        error_log("User $userId left room $roomId. Rows affected: " . $stmt->rowCount());
-        return $stmt->rowCount() > 0; // Retorna true se o jogador foi removido da sala, false caso contrário
+        try {
+            $db->beginTransaction();
+            
+            // 1. Garantir que os bots existem na base de dados
+            $bots = ['Bot_Ze', 'Bot_Maria', 'Bot_Quim'];
+            $botIds = [];
+            
+            foreach ($bots as $botName) {
+                $stmt = $db->prepare("SELECT id FROM users WHERE username = ?");
+                $stmt->execute([$botName]);
+                $bot = $stmt->fetch();
+                
+                if (!$bot) {
+                    $email = strtolower($botName) . '@jogosueca.pt';
+                    $hash = password_hash('bot_123456', PASSWORD_DEFAULT);
+                    $ins = $db->prepare("INSERT INTO users (username, email, password, is_active) VALUES (?, ?, ?, 1)");
+                    $ins->execute([$botName, $email, $hash]);
+                    $botIds[] = $db->lastInsertId();
+                } else {
+                    $botIds[] = $bot['id'];
+                }
+            }
+            
+            // 2. Criar a Sala de Treino
+            $roomName = "Treino: " . $ownerName;
+            $stmt = $db->prepare("INSERT INTO rooms (name, owner_id, status) VALUES (?, ?, 'Waiting')");
+            $stmt->execute([$roomName, $ownerId]);
+            $roomId = $db->lastInsertId();
+            
+            // 3. Inserir o Dono e os 3 Bots na sala
+            $stmt2 = $db->prepare("INSERT INTO room_players (room_id, user_id) VALUES (?, ?)");
+            $stmt2->execute([$roomId, $ownerId]); // Senta o Dono
+            foreach ($botIds as $bId) {
+                $stmt2->execute([$roomId, $bId]); // Senta os 3 Bots
+            }
+            
+            $db->commit();
+            return $roomId;
+        } catch (\Exception $e) {
+            $db->rollBack();
+            return false;
+        }
     }
 }

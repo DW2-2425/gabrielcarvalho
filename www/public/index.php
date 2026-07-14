@@ -17,6 +17,15 @@ $dotenv->load();
 // 3. Iniciar Sessões
 session_start();
 
+if (isset($_GET['lang']) && in_array($_GET['lang'], ['en', 'pt'])) {
+    $_SESSION['lang'] = $_GET['lang'];
+} elseif (!isset($_SESSION['lang'])) {
+    $_SESSION['lang'] = 'pt'; // Idioma padrão
+}
+
+global $i18n;
+$i18n = require_once __DIR__ . "/../src/I18n/i18n_" . $_SESSION['lang'] . ".php";
+
 // 4. Configuração Global de CORS
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");

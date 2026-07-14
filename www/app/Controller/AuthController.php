@@ -4,6 +4,8 @@ namespace Controller;
 use Model\User;
 use Controller\MailController;
 
+use function Laravel\Prompts\error;
+
 class AuthController {
     
     // Mostra o formulário de registo (Fluxo 1)
@@ -16,11 +18,25 @@ class AuthController {
         $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        // Validação simples
+        $pswdRule = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+
         if (empty($username) || empty($email) || empty($password)) {
             $error = "Todos os campos são de preenchimento obrigatório.";
             require_once __DIR__ . '/../View/register.php';
+            return;
+        }
+
+        if ($password !== $confirmPassword) {
+            $error = "As passwords não coincidem.";
+            require_once __DIR__ . '/../../src/view/register.php';
+            return;
+        }
+        
+        if (!preg_match($pswdRule, $password)) {
+            $error = "A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.";
+            require_once __DIR__ . '/../../src/view/register.php';
             return;
         }
 
@@ -39,9 +55,8 @@ class AuthController {
 
         if ($token) {
             // 1. Gerar o link de ativação com a NOVA rota (/activate)
-            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-            $activationLink = $scheme . '://' . $host . '/activate?token=' . $token;
+            $host = $_ENV['APP_URL'] ?? 'http://localhost';
+            $activationLink = $host . '/activate?token=' . urlencode($token);
             
             // 2. Tentar enviar via PHPMailer
             if ($mailController->sendActivationEmail($email, $activationLink)) {
@@ -162,4 +177,79 @@ class AuthController {
         }
         return false;
     }
+
+    public function forgotPassword() {
+        require_once __DIR__ . '/../../src/view/forgot.php';
+    }
+
+    public function processForgotPassword(){
+        $email = trim($_POST['email'] ?? '');
+
+        if (empty($email)) {
+            $error = "Por favor, insira o seu email.";
+            require_once __DIR__ . '/../../src/view/forgot.php';
+            return;
+        }
+
+        $userModel = new User();
+        $user = $userModel->findByEmail($email);
+
+        if ($user) {
+            $token = bin2hex(random_bytes(32)); // Gera um token aleatório
+            $userModel->setRecoveryToken($user['id'], $token);
+            $host = $_ENV['APP_URL'] ?? 'http://localhost';
+            $recoveryLink = $host . '/reset?token=' . urlencode($token);
+            $mailController = new MailController();
+            $mailController->sendRecoveryEmail($email, $recoveryLink);
+        }
+
+        $success = "Se o email existir no sistema, receberá um email com instruções para redefinir a password.";
+        require_once __DIR__ . '/../../src/view/forgot.php';
+    }
+
+    public function resetPassword() {
+        $token = $_GET['token'] ?? '';
+
+        if(empty($token)) {
+            die("Token de recuperação inválido.");
+        }
+
+        $userModel = new User();
+        $user = $userModel->findByRecoveryToken($token);
+
+        if(!$user) {
+            die("Token de recuperação inválido ou expirado.");
+        }
+
+        require_once __DIR__ . '/../../src/view/reset.php';
+    }
+
+    public function processResetPassword() {
+        $token = $_POST['token'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+        $pswdRule = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+
+        if(empty($password) || $password !== $confirmPassword) {
+            $error = "As passwords não coincidem ou estão vazias.";
+            require_once __DIR__ . '/../../src/view/reset.php';
+            return;
+        }
+
+        if (!preg_match($pswdRule, $password)) {
+            $error = "A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.";
+            require_once __DIR__ . '/../../src/view/reset.php';
+            return;
+        }
+
+        $userModel = new User();
+        if($userModel->resetPasswordWithToken($token, $password)) {
+            header("Location: /login?reset_success");
+            exit;
+        } else {
+            $error = "Ocorreu um erro. Por favor, tente novamente.";
+            require_once __DIR__ . '/../../src/view/reset.php';
+        }
+    }
+
 }

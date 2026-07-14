@@ -2,6 +2,7 @@
 namespace Controller;
 
 use Model\Room;
+use Model\User;
 use Services\GameService;
 use Controller\AuthController;
 
@@ -13,8 +14,15 @@ class RoomController {
         if (isset($_SESSION['user_id'])) {
             $roomModel = new Room();
             $rooms = $roomModel->getWaitingRooms();
+
+            $userModel = new User();
+            $profileUser = $userModel->findById($_SESSION['user_id']);
         }
         require_once __DIR__ . '/../../src/view/lobby.php';
+    }
+
+    public function showRules() {
+        require_once __DIR__ . '/../../src/view/rules.php';
     }
 
     // Processa a criação de sala
@@ -33,6 +41,24 @@ class RoomController {
                 exit;
             }
         }
+        header("Location: /");
+        exit;
+    }
+
+    public function createTraining() {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit;
+        }
+        
+        $roomModel = new Room();
+        $roomId = $roomModel->createTrainingRoom($_SESSION['user_id'], $_SESSION['username']);
+        
+        if ($roomId) {
+            header("Location: /room?id=" . $roomId);
+            exit;
+        }
+        
         header("Location: /");
         exit;
     }
@@ -82,7 +108,7 @@ class RoomController {
         exit;
     }
 
-        public function startGame() {
+    public function startGame() {
             // Verifica se o utilizador está autenticado e se possui um token JWT válido
             $user = new AuthController();
             if (!$user->isAuthenticated()) {
@@ -109,6 +135,7 @@ class RoomController {
             header("Location: /");
             exit;
         }
+    
 
     public function leaveRoom() {
         $user = new AuthController();
@@ -121,6 +148,7 @@ class RoomController {
         if ($roomId) {
             $roomModel = new Room();
             $roomModel->leaveRoom($roomId, $_SESSION['user_id']);
+            $roomModel->removeBotFromRoom($roomId);
             $roomModel->deleteIfEmpty($roomId);
             header("Location: /");
             exit;
@@ -130,7 +158,7 @@ class RoomController {
     }
 
 
-        public function delete() {
+    public function delete() {
             $user = new AuthController();
             if (!$user->isAuthenticated()) {
                 header("Location: /login");
@@ -156,4 +184,5 @@ class RoomController {
                     exit;
                 }
             }
+
 }
